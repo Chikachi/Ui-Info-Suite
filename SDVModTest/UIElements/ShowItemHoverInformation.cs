@@ -169,16 +169,20 @@ namespace UIInfoSuite.UIElements {
 
                 String requiredBundleName = null;
 
-                foreach (var requiredBundle in _prunedRequiredBundles)
+                bool jojaMember = Game1.player.mailReceived.Contains("JojaMember") || Game1.MasterPlayer.mailReceived.Contains("JojaMember");
+                bool completedCommunityCenter = Game1.player.hasCompletedCommunityCenter() || Game1.MasterPlayer.hasCompletedCommunityCenter();
+                if (!jojaMember && !completedCommunityCenter)
                 {
-                    if (requiredBundle.Value.Contains(_hoverItem.ParentSheetIndex) &&
-                        !_hoverItem.Name.Contains("arecrow") &&
-                        _hoverItem.Name != "Chest" &&
-                        _hoverItem.Name != "Recycling Machine" &&
-                        _hoverItem.Name != "Solid Gold Lewis")
+                    foreach (var requiredBundle in _prunedRequiredBundles)
                     {
-                        requiredBundleName = requiredBundle.Key;
-                        break;
+                        if (requiredBundle.Value.Contains(_hoverItem.ParentSheetIndex) &&
+                            !_hoverItem.Name.Contains("arecrow") &&
+                            _hoverItem.Name != "Chest" &&
+                            _hoverItem.Name != "Recycling Machine" &&
+                            _hoverItem.Name != "Solid Gold Lewis") {
+                            requiredBundleName = requiredBundle.Key;
+                            break;
+                        }
                     }
                 }
 
