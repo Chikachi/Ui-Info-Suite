@@ -1,6 +1,5 @@
 ﻿namespace UIInfoSuite {
-    static class LanguageKeys
-    {
+    static class LanguageKeys {
         public const string Day = "Day";
         public const string Days = "Days";
         public const string DayToMature = "DayToMature";

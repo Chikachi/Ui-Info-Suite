@@ -3,11 +3,10 @@ using StardewModdingAPI;
 using StardewValley;
 using System;
 using System.Collections.Generic;
+using System.Resources;
 
-namespace UIInfoSuite.Extensions
-{
-    public static class ObjectExtensions
-    {
+namespace UIInfoSuite.Extensions {
+    public static class ObjectExtensions {
         #region Memebers
         private static readonly Dictionary<String, int> _npcHeadShotSize = new Dictionary<string, int>()
         {
@@ -49,8 +48,7 @@ namespace UIInfoSuite.Extensions
 
         #endregion
 
-        public static Rectangle GetHeadShot(this NPC npc)
-        {
+        public static Rectangle GetHeadShot(this NPC npc) {
             int size;
             if (!_npcHeadShotSize.TryGetValue(npc.Name, out size))
                 size = 4;
@@ -61,13 +59,11 @@ namespace UIInfoSuite.Extensions
             return mugShotSourceRect;
         }
 
-        public static String SafeGetString(this IModHelper helper, String key)
-        {
+        public static String SafeGetString(this IModHelper helper, String key) {
             String result = string.Empty;
 
             if (!String.IsNullOrEmpty(key) &&
-                helper != null)
-            {
+                helper != null) {
                 result = helper.Translation.Get(key);
             }
 

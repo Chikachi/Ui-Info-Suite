@@ -1,13 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace UIInfoSuite.Options
-{
-    public static class OptionKeys
-    {
+﻿namespace UIInfoSuite.Options {
+    public static class OptionKeys {
         public const string AllowExperienceBarToFadeOut = "AllowExperienceBarToFadeOut";
         public const string ShowExperienceBar = "ShowExperienceBar";
         public const string ShowExperienceGain = "ShowExperienceGain";

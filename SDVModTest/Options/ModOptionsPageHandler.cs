@@ -8,10 +8,8 @@ using System.Collections.Generic;
 using System.Reflection;
 using UIInfoSuite.Extensions;
 
-namespace UIInfoSuite.Options
-{
-    class ModOptionsPageHandler : IDisposable
-    {
+namespace UIInfoSuite.Options {
+    class ModOptionsPageHandler : IDisposable {
         private List<ModOptionsElement> _optionsElements = new List<ModOptionsElement>();
         private readonly List<IDisposable> _elementsToDispose;
         private readonly IDictionary<string, String> _options;
@@ -36,8 +34,7 @@ namespace UIInfoSuite.Options
         private readonly ShowQueenOfSauceIcon _showQueenOfSauceIcon;
         private readonly ShowToolUpgradeStatus _showToolUpgradeStatus;
 
-        public ModOptionsPageHandler(IModHelper helper, IDictionary<String, String> options)
-        {
+        public ModOptionsPageHandler(IModHelper helper, IDictionary<String, String> options) {
             _options = options;
             helper.Events.Display.MenuChanged += ToggleModOptions;
             _helper = helper;
@@ -99,16 +96,13 @@ namespace UIInfoSuite.Options
         }
 
 
-        public void Dispose()
-        {
+        public void Dispose() {
             foreach (var item in _elementsToDispose)
                 item.Dispose();
         }
 
-        private void OnButtonLeftClicked(object sender, EventArgs e)
-        {
-            if (Game1.activeClickableMenu is GameMenu)
-            {
+        private void OnButtonLeftClicked(object sender, EventArgs e) {
+            if (Game1.activeClickableMenu is GameMenu) {
                 SetActiveClickableMenuToModOptionsPage();
                 Game1.playSound("smallSelect");
             }
@@ -117,27 +111,22 @@ namespace UIInfoSuite.Options
         /// <summary>Raised after a game menu is opened, closed, or replaced.</summary>
         /// <param name="sender">The event sender.</param>
         /// <param name="e">The event arguments.</param>
-        private void ToggleModOptions(object sender, MenuChangedEventArgs e)
-        {
+        private void ToggleModOptions(object sender, MenuChangedEventArgs e) {
             // remove from old menu
-            if (e.OldMenu != null)
-            {
+            if (e.OldMenu != null) {
                 _helper.Events.Display.RenderedActiveMenu -= DrawButton;
                 if (_modOptionsPageButton != null)
                     _modOptionsPageButton.OnLeftClicked -= OnButtonLeftClicked;
 
-                if (e.OldMenu is GameMenu)
-                {
+                if (e.OldMenu is GameMenu) {
                     List<IClickableMenu> tabPages = _helper.Reflection.GetField<List<IClickableMenu>>(e.OldMenu, "pages").GetValue();
                     tabPages.Remove(_modOptionsPage);
                 }
             }
 
             // add to new menu
-            if (e.NewMenu is GameMenu newMenu)
-            {
-                if (_modOptionsPageButton == null)
-                {
+            if (e.NewMenu is GameMenu newMenu) {
+                if (_modOptionsPageButton == null) {
                     _modOptionsPage = new ModOptionsPage(_optionsElements, _helper.Events);
                     _modOptionsPageButton = new ModOptionsPageButton(_helper.Events);
                 }
@@ -151,23 +140,18 @@ namespace UIInfoSuite.Options
             }
         }
 
-        private void SetActiveClickableMenuToModOptionsPage()
-        {
+        private void SetActiveClickableMenuToModOptionsPage() {
             if (Game1.activeClickableMenu is GameMenu menu)
                 menu.currentTab = _modOptionsTabPageNumber;
         }
 
-        private void DrawButton(object sender, EventArgs e)
-        {
+        private void DrawButton(object sender, EventArgs e) {
             if (Game1.activeClickableMenu is GameMenu &&
                 (Game1.activeClickableMenu as GameMenu).currentTab != 3) //don't render when the map is showing
             {
-                if ((Game1.activeClickableMenu as GameMenu).currentTab == _modOptionsTabPageNumber)
-                {
+                if ((Game1.activeClickableMenu as GameMenu).currentTab == _modOptionsTabPageNumber) {
                     _modOptionsPageButton.yPositionOnScreen = Game1.activeClickableMenu.yPositionOnScreen + 24;
-                }
-                else
-                {
+                } else {
                     _modOptionsPageButton.yPositionOnScreen = Game1.activeClickableMenu.yPositionOnScreen + 16;
                 }
                 _modOptionsPageButton.draw(Game1.spriteBatch);

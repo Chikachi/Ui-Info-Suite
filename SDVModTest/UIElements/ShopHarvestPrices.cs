@@ -9,40 +9,32 @@ using System.Reflection;
 using UIInfoSuite.Extensions;
 
 namespace UIInfoSuite.UIElements {
-    class ShopHarvestPrices : IDisposable
-    {
+    class ShopHarvestPrices : IDisposable {
         private readonly IModHelper _helper;
 
-        public ShopHarvestPrices(IModHelper helper)
-        {
+        public ShopHarvestPrices(IModHelper helper) {
             _helper = helper;
         }
 
-        public void ToggleOption(bool shopHarvestPrices)
-        {
+        public void ToggleOption(bool shopHarvestPrices) {
             _helper.Events.Display.RenderedActiveMenu -= OnRenderedActiveMenu;
 
-            if (shopHarvestPrices)
-            {
+            if (shopHarvestPrices) {
                 _helper.Events.Display.RenderedActiveMenu += OnRenderedActiveMenu;
             }
         }
 
-        public void Dispose()
-        {
+        public void Dispose() {
             ToggleOption(false);
         }
 
         /// <summary>When a menu is open (<see cref="Game1.activeClickableMenu"/> isn't null), raised after that menu is drawn to the sprite batch but before it's rendered to the screen.</summary>
-/// <param name="sender">The event sender.</param>
-/// <param name="e">The event arguments.</param>
-        private void OnRenderedActiveMenu(object sender, RenderedActiveMenuEventArgs e)
-        {
+        /// <param name="sender">The event sender.</param>
+        /// <param name="e">The event arguments.</param>
+        private void OnRenderedActiveMenu(object sender, RenderedActiveMenuEventArgs e) {
             // draw shop harvest prices
-            if (Game1.activeClickableMenu is ShopMenu menu)
-            {
-                if (typeof(ShopMenu).GetField("hoveredItem", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(menu) is Item hoverItem)
-                {
+            if (Game1.activeClickableMenu is ShopMenu menu) {
+                if (typeof(ShopMenu).GetField("hoveredItem", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(menu) is Item hoverItem) {
                     String text = string.Empty;
                     bool itemHasPriceInfo = Tools.GetTruePrice(hoverItem) > 0;
 
@@ -50,28 +42,25 @@ namespace UIInfoSuite.UIElements {
                         (hoverItem as StardewValley.Object).Type == "Seeds" &&
                         itemHasPriceInfo &&
                         hoverItem.Name != "Mixed Seeds" &&
-                        hoverItem.Name != "Winter Seeds")
-                    {
-                        StardewValley.Object temp = 
+                        hoverItem.Name != "Winter Seeds") {
+                        StardewValley.Object temp =
                             new StardewValley.Object(
                                 new Debris(
                                     new Crop(
-                                        hoverItem.ParentSheetIndex, 
-                                        0, 
+                                        hoverItem.ParentSheetIndex,
+                                        0,
                                         0)
-                                        .indexOfHarvest.Value, 
-                                    Game1.player.position, 
-                                    Game1.player.position).chunkType.Value, 
+                                        .indexOfHarvest.Value,
+                                    Game1.player.position,
+                                    Game1.player.position).chunkType.Value,
                                 1);
                         text = "    " + temp.Price;
                     }
 
                     Item heldItem = typeof(ShopMenu).GetField("heldItem", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(menu) as Item;
-                    if (heldItem == null)
-                    {
+                    if (heldItem == null) {
                         int value = 0;
-                        switch (hoverItem.ParentSheetIndex)
-                        {
+                        switch (hoverItem.ParentSheetIndex) {
                             case 628: value = 50; break;
                             case 629: value = 80; break;
                             case 630:
@@ -85,8 +74,7 @@ namespace UIInfoSuite.UIElements {
                             text = "    " + value;
 
                         if (text != "" &&
-                            (hoverItem as StardewValley.Object).Type == "Seeds")
-                        {
+                            (hoverItem as StardewValley.Object).Type == "Seeds") {
                             String textToRender = _helper.SafeGetString(
                                 LanguageKeys.HarvestPrice);
                             int xPosition = menu.xPositionOnScreen - 30;

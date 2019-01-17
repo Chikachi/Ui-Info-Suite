@@ -1,9 +1,8 @@
 ﻿using Microsoft.Xna.Framework.Input;
-﻿using StardewModdingAPI;
+using StardewModdingAPI;
 
 namespace UIInfoSuite {
-    class ModConfig
-    {
+    class ModConfig {
         public string[] KeysForBarrelAndCropTimes { get; set; } = new string[]
         {
             SButton.LeftShift.ToString()
@@ -55,8 +54,8 @@ namespace UIInfoSuite {
             new int[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
             new int[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }
         };
-		
-		public int[][] PrismaticSprinkler { get; set; } = new int[][]
+
+        public int[][] PrismaticSprinkler { get; set; } = new int[][]
         {
             new int[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
             new int[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },

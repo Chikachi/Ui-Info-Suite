@@ -8,8 +8,7 @@ using System.Linq;
 using System.Reflection;
 
 namespace UIInfoSuite.UIElements {
-    class ShowAccurateHearts : IDisposable
-    {
+    class ShowAccurateHearts : IDisposable {
         private String[] _friendNames;
         private SocialPage _socialPage;
         private IModEvents _events;
@@ -22,40 +21,32 @@ namespace UIInfoSuite.UIElements {
             new int[] { 0, 0, 1, 0, 0 }
         };
 
-        public ShowAccurateHearts(IModEvents events)
-        {
+        public ShowAccurateHearts(IModEvents events) {
             _events = events;
         }
 
-        public void ToggleOption(bool showAccurateHearts)
-        {
+        public void ToggleOption(bool showAccurateHearts) {
             _events.Display.MenuChanged -= OnMenuChanged;
             _events.Display.RenderedActiveMenu -= OnRenderedActiveMenu;
 
-            if (showAccurateHearts)
-            {
+            if (showAccurateHearts) {
                 _events.Display.MenuChanged += OnMenuChanged;
                 _events.Display.RenderedActiveMenu += OnRenderedActiveMenu;
             }
         }
 
-        public void Dispose()
-        {
+        public void Dispose() {
             ToggleOption(false);
         }
 
         /// <summary>When a menu is open (<see cref="Game1.activeClickableMenu"/> isn't null), raised after that menu is drawn to the sprite batch but before it's rendered to the screen.</summary>
         /// <param name="sender">The event sender.</param>
         /// <param name="e">The event arguments.</param>
-        private void OnRenderedActiveMenu(object sender, RenderedActiveMenuEventArgs e)
-        {
+        private void OnRenderedActiveMenu(object sender, RenderedActiveMenuEventArgs e) {
             // draw heart fills
-            if (Game1.activeClickableMenu is GameMenu gameMenu)
-            {
-                if (gameMenu.currentTab == 2)
-                {
-                    if (_socialPage != null)
-                    {
+            if (Game1.activeClickableMenu is GameMenu gameMenu) {
+                if (gameMenu.currentTab == 2) {
+                    if (_socialPage != null) {
                         int slotPosition = (int)typeof(SocialPage)
                             .GetField(
                                 "slotPosition",
@@ -63,25 +54,21 @@ namespace UIInfoSuite.UIElements {
                                 .GetValue(_socialPage);
                         int yOffset = 0;
 
-                        for (int i = slotPosition; i < slotPosition + 5 && i < _friendNames.Length; ++i)
-                        {
+                        for (int i = slotPosition;i < slotPosition + 5 && i < _friendNames.Length;++i) {
                             int yPosition = Game1.activeClickableMenu.yPositionOnScreen + 130 + yOffset;
                             yOffset += 112;
                             Friendship friendshipValues;
                             String nextName = _friendNames[i];
-                            if (Game1.player.friendshipData.TryGetValue(nextName, out friendshipValues))
-                            {
+                            if (Game1.player.friendshipData.TryGetValue(nextName, out friendshipValues)) {
                                 int friendshipRawValue = friendshipValues.Points;
 
-                                if (friendshipRawValue > 0)
-                                {
+                                if (friendshipRawValue > 0) {
                                     int pointsToNextHeart = friendshipRawValue % 250;
                                     int numHearts = friendshipRawValue / 250;
 
                                     if (friendshipRawValue < 3000 &&
                                         _friendNames[i] == Game1.player.spouse ||
-                                        friendshipRawValue < 2500)
-                                    {
+                                        friendshipRawValue < 2500) {
                                         DrawEachIndividualSquare(numHearts, pointsToNextHeart, yPosition);
                                         //if (!Game1.options.hardwareCursor)
                                         //    Game1.spriteBatch.Draw(
@@ -107,9 +94,7 @@ namespace UIInfoSuite.UIElements {
                             Game1.spriteBatch,
                             hoverText,
                             Game1.smallFont);
-                    }
-                    else
-                    {
+                    } else {
                         ExtendMenuIfNeeded();
                     }
                 }
@@ -119,21 +104,16 @@ namespace UIInfoSuite.UIElements {
         /// <summary>Raised after a game menu is opened, closed, or replaced.</summary>
         /// <param name="sender">The event sender.</param>
         /// <param name="e">The event arguments.</param>
-        private void OnMenuChanged(object sender, MenuChangedEventArgs e)
-        {
+        private void OnMenuChanged(object sender, MenuChangedEventArgs e) {
             ExtendMenuIfNeeded();
         }
 
-        private void ExtendMenuIfNeeded()
-        {
-            if (Game1.activeClickableMenu is GameMenu)
-            {
+        private void ExtendMenuIfNeeded() {
+            if (Game1.activeClickableMenu is GameMenu) {
                 List<IClickableMenu> menuList = typeof(GameMenu).GetField("pages", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(Game1.activeClickableMenu) as List<IClickableMenu>;
 
-                foreach (var menu in menuList)
-                {
-                    if (menu is SocialPage page)
-                    {
+                foreach (var menu in menuList) {
+                    if (menu is SocialPage page) {
                         _socialPage = page;
                         _friendNames = (typeof(SocialPage).GetField("names", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(_socialPage) as List<object>)
                             .Select(name => name.ToString())
@@ -144,27 +124,20 @@ namespace UIInfoSuite.UIElements {
             }
         }
 
-        private void DrawEachIndividualSquare(int friendshipLevel, int friendshipPoints, int yPosition)
-        {
+        private void DrawEachIndividualSquare(int friendshipLevel, int friendshipPoints, int yPosition) {
             int numberOfPointsToDraw = (int)(((double)friendshipPoints) / 12.5);
             int num2;
 
-            if (friendshipLevel > 10)
-            {
+            if (friendshipLevel > 10) {
                 num2 = 32 * (friendshipLevel - 10);
                 yPosition += 28;
-            }
-            else
-            {
+            } else {
                 num2 = 32 * friendshipLevel;
             }
 
-            for (int i = 3; i >= 0 && numberOfPointsToDraw > 0; --i)
-            {
-                for (int j = 0; j < 5 && numberOfPointsToDraw > 0; ++j, --numberOfPointsToDraw)
-                {
-                    if (_numArray[i][j] == 1)
-                    {
+            for (int i = 3;i >= 0 && numberOfPointsToDraw > 0;--i) {
+                for (int j = 0;j < 5 && numberOfPointsToDraw > 0;++j, --numberOfPointsToDraw) {
+                    if (_numArray[i][j] == 1) {
                         Game1.spriteBatch.Draw(
                             Game1.staminaRect,
                             new Rectangle(

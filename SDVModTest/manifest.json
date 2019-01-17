@@ -1,8 +1,8 @@
 ﻿{
-   "Name": "UI Info Suite",
-   "Author": "Cdaragorn",
+   "Name": "UI Info Suite - Chikachi Edition",
+   "Author": "Cdaragorn - Modified by Chikachi",
    "Version": "1.7.23",
-   "Description": "Adds a lot of useful information to the user interface. This is based on Demiacle's excellent UIModSuite.",
+   "Description": "Adds a lot of useful information to the user interface. This is based on Demiacle's excellent UIModSuite. With modifications from Chikachi.",
    "UniqueID": "Cdaragorn.UiInfoSuite",
    "EntryDll": "UIInfoSuite.dll",
    "MinimumApiVersion" : "2.9.3",

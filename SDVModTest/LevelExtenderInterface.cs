@@ -1,6 +1,5 @@
 ﻿namespace UIInfoSuite {
-    public interface LevelExtenderInterface
-    {
+    public interface LevelExtenderInterface {
         int[] currentXP();
         int[] requiredXP();
     }

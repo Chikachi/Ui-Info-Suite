@@ -7,10 +7,8 @@ using System.Collections.Generic;
 using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI.Events;
 
-namespace UIInfoSuite.Options
-{
-    public class ModOptionsPage : IClickableMenu
-    {
+namespace UIInfoSuite.Options {
+    public class ModOptionsPage : IClickableMenu {
         private const int Width = 800;
 
         private List<ClickableComponent> _optionSlots = new List<ClickableComponent>();
@@ -25,17 +23,16 @@ namespace UIInfoSuite.Options
         private Rectangle _scrollBarRunner;
 
         public ModOptionsPage(List<ModOptionsElement> options, IModEvents events)
-            : base(Game1.activeClickableMenu.xPositionOnScreen, Game1.activeClickableMenu.yPositionOnScreen + 10, Width, Game1.activeClickableMenu.height)
-        {
+            : base(Game1.activeClickableMenu.xPositionOnScreen, Game1.activeClickableMenu.yPositionOnScreen + 10, Width, Game1.activeClickableMenu.height) {
             _options = options;
             _upArrow = new ClickableTextureComponent(
                 new Rectangle(
-                    xPositionOnScreen + width + Game1.tileSize / 4, 
-                    yPositionOnScreen + Game1.tileSize, 
-                    11 * Game1.pixelZoom, 
-                    12 * Game1.pixelZoom), 
-                Game1.mouseCursors, 
-                new Rectangle(421, 459, 11, 12), 
+                    xPositionOnScreen + width + Game1.tileSize / 4,
+                    yPositionOnScreen + Game1.tileSize,
+                    11 * Game1.pixelZoom,
+                    12 * Game1.pixelZoom),
+                Game1.mouseCursors,
+                new Rectangle(421, 459, 11, 12),
                 Game1.pixelZoom);
 
             _downArrow = new ClickableTextureComponent(
@@ -63,7 +60,7 @@ namespace UIInfoSuite.Options
                 _scrollBar.bounds.Width,
                 height - Game1.tileSize * 2 - _upArrow.bounds.Height - Game1.pixelZoom * 2);
 
-            for (int i = 0; i < 7; ++i)
+            for (int i = 0;i < 7;++i)
                 _optionSlots.Add(new ClickableComponent(
                     new Rectangle(
                         xPositionOnScreen + Game1.tileSize / 4,
@@ -78,16 +75,13 @@ namespace UIInfoSuite.Options
         /// <summary>Raised after a game menu is opened, closed, or replaced.</summary>
         /// <param name="sender">The event sender.</param>
         /// <param name="e">The event arguments.</param>
-        private void OnMenuChanged(object sender, MenuChangedEventArgs e)
-        {
-            if (e.NewMenu is GameMenu)
-            {
+        private void OnMenuChanged(object sender, MenuChangedEventArgs e) {
+            if (e.NewMenu is GameMenu) {
                 xPositionOnScreen = Game1.activeClickableMenu.xPositionOnScreen;
                 yPositionOnScreen = Game1.activeClickableMenu.yPositionOnScreen + 10;
                 height = Game1.activeClickableMenu.height;
 
-                for (int i = 0; i < _optionSlots.Count; ++i)
-                {
+                for (int i = 0;i < _optionSlots.Count;++i) {
                     var next = _optionSlots[i];
                     next.bounds.X = xPositionOnScreen + Game1.tileSize / 4;
                     next.bounds.Y = yPositionOnScreen + Game1.tileSize * 5 / 4 + Game1.pixelZoom + i * (height - Game1.tileSize * 2) / 7;
@@ -117,48 +111,40 @@ namespace UIInfoSuite.Options
             }
         }
 
-        private void SetScrollBarToCurrentItem()
-        {
-            if (_options.Count > 0)
-            {
+        private void SetScrollBarToCurrentItem() {
+            if (_options.Count > 0) {
                 _scrollBar.bounds.Y = _scrollBarRunner.Height / Math.Max(1, _options.Count - 7 + 1) * _currentItemIndex + _upArrow.bounds.Bottom + Game1.pixelZoom;
 
-                if (_currentItemIndex == _options.Count - 7)
-                {
+                if (_currentItemIndex == _options.Count - 7) {
                     _scrollBar.bounds.Y = _downArrow.bounds.Y - _scrollBar.bounds.Height - Game1.pixelZoom;
                 }
             }
         }
 
-        public override void leftClickHeld(int x, int y)
-        {
-            if (!GameMenu.forcePreventClose)
-            {
+        public override void leftClickHeld(int x, int y) {
+            if (!GameMenu.forcePreventClose) {
                 base.leftClickHeld(x, y);
 
-                if (_isScrolling)
-                {
+                if (_isScrolling) {
                     int yBefore = _scrollBar.bounds.Y;
 
                     _scrollBar.bounds.Y = Math.Min(
-                        yPositionOnScreen + height - Game1.tileSize - Game1.pixelZoom * 3 - _scrollBar.bounds.Height, 
+                        yPositionOnScreen + height - Game1.tileSize - Game1.pixelZoom * 3 - _scrollBar.bounds.Height,
                         Math.Max(
-                            y, 
+                            y,
                             yPositionOnScreen + _upArrow.bounds.Height + Game1.pixelZoom * 5));
 
                     _currentItemIndex = Math.Min(
-                        _options.Count - 7, 
+                        _options.Count - 7,
                         Math.Max(
-                            0, 
+                            0,
                             _options.Count * (y - _scrollBarRunner.Y) / _scrollBarRunner.Height));
 
                     SetScrollBarToCurrentItem();
 
                     if (yBefore != _scrollBar.bounds.Y)
                         Game1.playSound("shiny4");
-                }
-                else if (_optionsSlotHeld > -1 && _optionsSlotHeld + _currentItemIndex < _options.Count)
-                {
+                } else if (_optionsSlotHeld > -1 && _optionsSlotHeld + _currentItemIndex < _options.Count) {
                     _options[_currentItemIndex + _optionsSlotHeld].LeftClickHeld(
                         x - _optionSlots[_optionsSlotHeld].bounds.X,
                         y - _optionSlots[_optionsSlotHeld].bounds.Y);
@@ -166,42 +152,32 @@ namespace UIInfoSuite.Options
             }
         }
 
-        public override void receiveKeyPress(Keys key)
-        {
+        public override void receiveKeyPress(Keys key) {
             if (_optionsSlotHeld > -1 &&
-                _optionsSlotHeld + _currentItemIndex < _options.Count)
-            {
+                _optionsSlotHeld + _currentItemIndex < _options.Count) {
                 _options[_currentItemIndex + _optionsSlotHeld].ReceiveKeyPress(key);
             }
         }
 
-        public override void receiveScrollWheelAction(int direction)
-        {
-            if (!GameMenu.forcePreventClose)
-            {
+        public override void receiveScrollWheelAction(int direction) {
+            if (!GameMenu.forcePreventClose) {
                 base.receiveScrollWheelAction(direction);
 
-                if (direction > 0 && _currentItemIndex > 0)
-                {
+                if (direction > 0 && _currentItemIndex > 0) {
                     UpArrowPressed();
                     Game1.playSound("shiny4");
-                }
-                else if (direction < 0 && _currentItemIndex < Math.Max(0, _options.Count - 7))
-                {
+                } else if (direction < 0 && _currentItemIndex < Math.Max(0, _options.Count - 7)) {
                     DownArrowPressed();
                     Game1.playSound("shiny4");
                 }
             }
         }
 
-        public override void releaseLeftClick(int x, int y)
-        {
-            if (!GameMenu.forcePreventClose)
-            {
+        public override void releaseLeftClick(int x, int y) {
+            if (!GameMenu.forcePreventClose) {
                 base.releaseLeftClick(x, y);
 
-                if (_optionsSlotHeld > -1 && _optionsSlotHeld + _currentItemIndex < _options.Count)
-                {
+                if (_optionsSlotHeld > -1 && _optionsSlotHeld + _currentItemIndex < _options.Count) {
                     ClickableComponent optionSlot = _optionSlots[_optionsSlotHeld];
                     _options[_currentItemIndex + _optionsSlotHeld].LeftClickReleased(x - optionSlot.bounds.X, y - optionSlot.bounds.Y);
                 }
@@ -210,57 +186,44 @@ namespace UIInfoSuite.Options
             }
         }
 
-        private void DownArrowPressed()
-        {
+        private void DownArrowPressed() {
             _downArrow.scale = _downArrow.baseScale;
             ++_currentItemIndex;
             SetScrollBarToCurrentItem();
         }
 
-        private void UpArrowPressed()
-        {
+        private void UpArrowPressed() {
             _upArrow.scale = _upArrow.baseScale;
             --_currentItemIndex;
             SetScrollBarToCurrentItem();
         }
 
-        public override void receiveLeftClick(int x, int y, bool playSound = true)
-        {
-            if (!GameMenu.forcePreventClose)
-            {
-                if (_downArrow.containsPoint(x, y) && _currentItemIndex < Math.Max(0, _options.Count - 7))
-                {
+        public override void receiveLeftClick(int x, int y, bool playSound = true) {
+            if (!GameMenu.forcePreventClose) {
+                if (_downArrow.containsPoint(x, y) && _currentItemIndex < Math.Max(0, _options.Count - 7)) {
                     DownArrowPressed();
                     Game1.playSound("shwip");
-                }
-                else if (_upArrow.containsPoint(x, y) && _currentItemIndex > 0)
-                {
+                } else if (_upArrow.containsPoint(x, y) && _currentItemIndex > 0) {
                     UpArrowPressed();
                     Game1.playSound("shwip");
-                }
-                else if (_scrollBar.containsPoint(x, y))
-                {
+                } else if (_scrollBar.containsPoint(x, y)) {
                     _isScrolling = true;
-                }
-                else if (!_downArrow.containsPoint(x, y) && 
-                    x > xPositionOnScreen + width && 
-                    x < xPositionOnScreen + width + Game1.tileSize * 2 &&
-                    y > yPositionOnScreen &&
-                    y < yPositionOnScreen + height)
-                {
+                } else if (!_downArrow.containsPoint(x, y) &&
+                      x > xPositionOnScreen + width &&
+                      x < xPositionOnScreen + width + Game1.tileSize * 2 &&
+                      y > yPositionOnScreen &&
+                      y < yPositionOnScreen + height) {
                     _isScrolling = true;
                     base.leftClickHeld(x, y);
                     base.releaseLeftClick(x, y);
                 }
                 _currentItemIndex = Math.Max(0, Math.Min(_options.Count - 7, _currentItemIndex));
-                for (int i = 0; i < _optionSlots.Count; ++i)
-                {
-                    if (_optionSlots[i].bounds.Contains(x, y) && 
-                        _currentItemIndex + i < _options.Count && 
-                        _options[_currentItemIndex + i].Bounds.Contains(x - _optionSlots[i].bounds.X, y - _optionSlots[i].bounds.Y))
-                    {
+                for (int i = 0;i < _optionSlots.Count;++i) {
+                    if (_optionSlots[i].bounds.Contains(x, y) &&
+                        _currentItemIndex + i < _options.Count &&
+                        _options[_currentItemIndex + i].Bounds.Contains(x - _optionSlots[i].bounds.X, y - _optionSlots[i].bounds.Y)) {
                         _options[_currentItemIndex + i].ReceiveLeftClick(
-                            x - _optionSlots[i].bounds.X, 
+                            x - _optionSlots[i].bounds.X,
                             y - _optionSlots[i].bounds.Y);
                         _optionsSlotHeld = i;
                         break;
@@ -270,23 +233,18 @@ namespace UIInfoSuite.Options
         }
 
 
-        public override void receiveRightClick(int x, int y, bool playSound = true)
-        {
-            
+        public override void receiveRightClick(int x, int y, bool playSound = true) {
+
         }
 
-        public override void receiveGamePadButton(Buttons b)
-        {
-            if (b == Buttons.A)
-            {
+        public override void receiveGamePadButton(Buttons b) {
+            if (b == Buttons.A) {
                 receiveLeftClick(Game1.getMouseX(), Game1.getMouseY());
             }
         }
 
-        public override void performHoverAction(int x, int y)
-        {
-            if (!GameMenu.forcePreventClose)
-            {
+        public override void performHoverAction(int x, int y) {
+            if (!GameMenu.forcePreventClose) {
                 _hoverText = "";
                 _upArrow.tryHover(x, y);
                 _downArrow.tryHover(x, y);
@@ -294,40 +252,35 @@ namespace UIInfoSuite.Options
             }
         }
 
-        public override void draw(SpriteBatch batch)
-        {
+        public override void draw(SpriteBatch batch) {
             Game1.drawDialogueBox(xPositionOnScreen, yPositionOnScreen - 10, width, height, false, true);
             batch.End();
             batch.Begin(SpriteSortMode.FrontToBack, BlendState.NonPremultiplied, SamplerState.PointClamp, null, null);
-            for (int i = 0; i < _optionSlots.Count; ++i)
-            {
+            for (int i = 0;i < _optionSlots.Count;++i) {
                 if (_currentItemIndex >= 0 &&
-                    _currentItemIndex + i < _options.Count)
-                {
+                    _currentItemIndex + i < _options.Count) {
                     _options[_currentItemIndex + i].Draw(
-                        batch, 
-                        _optionSlots[i].bounds.X, 
+                        batch,
+                        _optionSlots[i].bounds.X,
                         _optionSlots[i].bounds.Y);
                 }
             }
             batch.End();
             batch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, null, null);
-            if (!GameMenu.forcePreventClose)
-            {
+            if (!GameMenu.forcePreventClose) {
                 _upArrow.draw(batch);
                 _downArrow.draw(batch);
-                if (_options.Count > 7)
-                {
+                if (_options.Count > 7) {
                     IClickableMenu.drawTextureBox(
-                        batch, 
-                        Game1.mouseCursors, 
-                        new Rectangle(403, 383, 6, 6), 
-                        _scrollBarRunner.X, 
-                        _scrollBarRunner.Y, 
-                        _scrollBarRunner.Width, 
-                        _scrollBarRunner.Height, 
-                        Color.White, 
-                        Game1.pixelZoom, 
+                        batch,
+                        Game1.mouseCursors,
+                        new Rectangle(403, 383, 6, 6),
+                        _scrollBarRunner.X,
+                        _scrollBarRunner.Y,
+                        _scrollBarRunner.Width,
+                        _scrollBarRunner.Height,
+                        Color.White,
+                        Game1.pixelZoom,
                         false);
                     _scrollBar.draw(batch);
                 }

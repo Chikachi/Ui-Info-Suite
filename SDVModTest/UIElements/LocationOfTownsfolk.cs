@@ -13,8 +13,7 @@ using System.Reflection;
 using System.Text;
 
 namespace UIInfoSuite.UIElements {
-    class LocationOfTownsfolk : IDisposable
-    {
+    class LocationOfTownsfolk : IDisposable {
         #region Members
         private List<NPC> _townsfolk = new List<NPC>();
         private List<OptionsCheckbox> _checkboxes = new List<OptionsCheckbox>();
@@ -80,29 +79,25 @@ namespace UIInfoSuite.UIElements {
             { "Club", new KeyValuePair<int, int>(60, 92) }
         };
 
-#endregion
+        #endregion
 
-        public LocationOfTownsfolk(IModHelper helper, IDictionary<String, String> options)
-        {
+        public LocationOfTownsfolk(IModHelper helper, IDictionary<String, String> options) {
             _helper = helper;
             _options = options;
         }
 
-        public void Dispose()
-        {
+        public void Dispose() {
             ToggleShowNPCLocationsOnMap(false);
         }
 
-        public void ToggleShowNPCLocationsOnMap(bool showLocations)
-        {
+        public void ToggleShowNPCLocationsOnMap(bool showLocations) {
             ExtendMenuIfNeeded();
             _helper.Events.Display.RenderedActiveMenu -= OnRenderedActiveMenu_DrawSocialPageOptions;
             _helper.Events.Display.RenderedActiveMenu -= OnRenderedActiveMenu_DrawNPCLocationsOnMap;
             _helper.Events.Input.ButtonPressed -= OnButtonPressed_ForSocialPage;
             _helper.Events.Display.MenuChanged -= OnMenuChanged;
 
-            if (showLocations)
-            {
+            if (showLocations) {
                 _helper.Events.Display.RenderedActiveMenu += OnRenderedActiveMenu_DrawSocialPageOptions;
                 _helper.Events.Display.RenderedActiveMenu += OnRenderedActiveMenu_DrawNPCLocationsOnMap;
                 _helper.Events.Input.ButtonPressed += OnButtonPressed_ForSocialPage;
@@ -113,23 +108,18 @@ namespace UIInfoSuite.UIElements {
         /// <summary>Raised after a game menu is opened, closed, or replaced.</summary>
         /// <param name="sender">The event sender.</param>
         /// <param name="e">The event arguments.</param>
-        private void OnMenuChanged(object sender, MenuChangedEventArgs e)
-        {
+        private void OnMenuChanged(object sender, MenuChangedEventArgs e) {
             ExtendMenuIfNeeded();
         }
 
-        private void ExtendMenuIfNeeded()
-        {
-            if (Game1.activeClickableMenu is GameMenu)
-            {
+        private void ExtendMenuIfNeeded() {
+            if (Game1.activeClickableMenu is GameMenu) {
                 List<IClickableMenu> clickableMenuList = typeof(GameMenu)
                     .GetField("pages", BindingFlags.Instance | BindingFlags.NonPublic)
                     .GetValue(Game1.activeClickableMenu) as List<IClickableMenu>;
 
-                foreach (var menu in clickableMenuList)
-                {
-                    if (menu is SocialPage)
-                    {
+                foreach (var menu in clickableMenuList) {
+                    if (menu is SocialPage) {
                         _socialPage = menu as SocialPage;
                         _friendNames = (typeof(SocialPage).GetField("names", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(menu) as List<object>)
                             .Select(name => name.ToString())
@@ -138,38 +128,29 @@ namespace UIInfoSuite.UIElements {
                     }
                 }
                 _townsfolk.Clear();
-                foreach (var location in Game1.locations)
-                {
-                    foreach (var npc in location.characters)
-                    {
+                foreach (var location in Game1.locations) {
+                    foreach (var npc in location.characters) {
                         if (Game1.player.friendshipData.ContainsKey(npc.Name))
                             _townsfolk.Add(npc);
                     }
                 }
                 _checkboxes.Clear();
-                foreach (var friendName in _friendNames)
-                {
+                foreach (var friendName in _friendNames) {
                     int hashCode = friendName.GetHashCode();
                     OptionsCheckbox checkbox = new OptionsCheckbox("", hashCode);
                     _checkboxes.Add(checkbox);
 
                     //default to on
                     bool optionForThisFriend = true;
-                    if (!Game1.player.friendshipData.ContainsKey(friendName))
-                    {
+                    if (!Game1.player.friendshipData.ContainsKey(friendName)) {
                         checkbox.greyedOut = true;
                         optionForThisFriend = false;
-                    }
-                    else
-                    {
+                    } else {
                         String optionValue = _options.SafeGet(hashCode.ToString());
 
-                        if (String.IsNullOrEmpty(optionValue))
-                        {
+                        if (String.IsNullOrEmpty(optionValue)) {
                             _options[hashCode.ToString()] = optionForThisFriend.ToString();
-                        }
-                        else
-                        {
+                        } else {
                             optionForThisFriend = optionValue.SafeParseBool();
                         }
                     }
@@ -181,28 +162,22 @@ namespace UIInfoSuite.UIElements {
         /// <summary>Raised after the player presses a button on the keyboard, controller, or mouse.</summary>
         /// <param name="sender">The event sender.</param>
         /// <param name="e">The event arguments.</param>
-        private void OnButtonPressed_ForSocialPage(object sender, ButtonPressedEventArgs e)
-        {
-            if (Game1.activeClickableMenu is GameMenu && (e.Button == SButton.MouseLeft || e.Button == SButton.ControllerA))
-            {
+        private void OnButtonPressed_ForSocialPage(object sender, ButtonPressedEventArgs e) {
+            if (Game1.activeClickableMenu is GameMenu && (e.Button == SButton.MouseLeft || e.Button == SButton.ControllerA)) {
                 CheckSelectedBox();
             }
         }
 
-        private void CheckSelectedBox()
-        {
-            if (Game1.activeClickableMenu is GameMenu)
-            {
+        private void CheckSelectedBox() {
+            if (Game1.activeClickableMenu is GameMenu) {
                 int slotPosition = (int)typeof(SocialPage)
                     .GetField("slotPosition", BindingFlags.Instance | BindingFlags.NonPublic)
                     .GetValue(_socialPage);
 
-                for (int i = slotPosition; i < slotPosition + 5; ++i)
-                {
+                for (int i = slotPosition;i < slotPosition + 5;++i) {
                     OptionsCheckbox checkbox = _checkboxes[i];
                     if (checkbox.bounds.Contains(Game1.getMouseX(), Game1.getMouseY()) &&
-                        !checkbox.greyedOut)
-                    {
+                        !checkbox.greyedOut) {
                         checkbox.isChecked = !checkbox.isChecked;
                         _options[checkbox.whichOption.ToString()] = checkbox.isChecked.ToString();
                         Game1.playSound("drumkit6");
@@ -214,40 +189,30 @@ namespace UIInfoSuite.UIElements {
         /// <summary>When a menu is open (<see cref="Game1.activeClickableMenu"/> isn't null), raised after that menu is drawn to the sprite batch but before it's rendered to the screen.</summary>
         /// <param name="sender">The event sender.</param>
         /// <param name="e">The event arguments.</param>
-        private void OnRenderedActiveMenu_DrawNPCLocationsOnMap(object sender, RenderedActiveMenuEventArgs e)
-        {
-            if (Game1.activeClickableMenu is GameMenu gameMenu)
-            {
-                if (gameMenu.currentTab == 3)
-                {
+        private void OnRenderedActiveMenu_DrawNPCLocationsOnMap(object sender, RenderedActiveMenuEventArgs e) {
+            if (Game1.activeClickableMenu is GameMenu gameMenu) {
+                if (gameMenu.currentTab == 3) {
                     List<String> namesToShow = new List<string>();
-                    foreach (var character in _townsfolk)
-                    {
-                        try
-                        {
+                    foreach (var character in _townsfolk) {
+                        try {
                             int hashCode = character.Name.GetHashCode();
 
                             bool drawCharacter = _options.SafeGet(hashCode.ToString()).SafeParseBool();
 
-                            if (drawCharacter)
-                            {
+                            if (drawCharacter) {
                                 KeyValuePair<int, int> location = new KeyValuePair<int, int>((int)character.Position.X, (int)character.position.Y);
                                 String locationName = character.currentLocation?.Name ?? character.DefaultMap;
 
-                                switch (locationName)
-                                {
+                                switch (locationName) {
                                     case "Town":
-                                    case "Forest":
-                                        {
+                                    case "Forest": {
                                             int xStart = 0;
                                             int yStart = 0;
                                             int areaWidth = 0;
                                             int areaHeight = 0;
 
-                                            switch (locationName)
-                                            {
-                                                case "Town":
-                                                    {
+                                            switch (locationName) {
+                                                case "Town": {
                                                         xStart = 595;
                                                         yStart = 163;
                                                         areaWidth = 345;
@@ -255,8 +220,7 @@ namespace UIInfoSuite.UIElements {
                                                         break;
                                                     }
 
-                                                case "Forest":
-                                                    {
+                                                case "Forest": {
                                                         xStart = 183;
                                                         yStart = 378;
                                                         areaWidth = 319;
@@ -278,8 +242,7 @@ namespace UIInfoSuite.UIElements {
                                             break;
                                         }
 
-                                    default:
-                                        {
+                                    default: {
                                             _mapLocations.TryGetValue(locationName, out location);
                                             break;
                                         }
@@ -342,18 +305,14 @@ namespace UIInfoSuite.UIElements {
                                 int mouseY = Game1.getMouseY();
 
                                 if (mouseX >= x && mouseX <= x + headShot.Width * headShotScale &&
-                                    mouseY >= y && mouseY <= y + headShot.Height * headShotScale)
-                                {
+                                    mouseY >= y && mouseY <= y + headShot.Height * headShotScale) {
                                     namesToShow.Add(character.displayName);
                                 }
 
-                                foreach (var quest in Game1.player.questLog)
-                                {
-                                    if (quest.accepted.Value && quest.dailyQuest.Value && !quest.completed.Value)
-                                    {
+                                foreach (var quest in Game1.player.questLog) {
+                                    if (quest.accepted.Value && quest.dailyQuest.Value && !quest.completed.Value) {
                                         bool isQuestTarget = false;
-                                        switch (quest.questType.Value)
-                                        {
+                                        switch (quest.questType.Value) {
                                             case 3: isQuestTarget = (quest as ItemDeliveryQuest).target.Value == character.Name; break;
                                             case 4: isQuestTarget = (quest as SlayMonsterQuest).target.Value == character.Name; break;
                                             case 7: isQuestTarget = (quest as FishingQuest).target.Value == character.Name; break;
@@ -374,19 +333,15 @@ namespace UIInfoSuite.UIElements {
                                     }
                                 }
                             }
-                        }
-                        catch (Exception ex)
-                        {
+                        } catch (Exception ex) {
                             ModEntry.MonitorObject.Log(ex.Message + Environment.NewLine + ex.StackTrace, LogLevel.Error);
                         }
                     }
 
-                    if (namesToShow.Count > 0)
-                    {
+                    if (namesToShow.Count > 0) {
                         StringBuilder text = new StringBuilder();
                         int longestLength = 0;
-                        foreach (String name in namesToShow)
-                        {
+                        foreach (String name in namesToShow) {
                             text.AppendLine(name);
                             longestLength = Math.Max(longestLength, (int)Math.Ceiling(Game1.smallFont.MeasureString(name).Length()));
                         }
@@ -436,16 +391,14 @@ namespace UIInfoSuite.UIElements {
         /// <summary>When a menu is open (<see cref="Game1.activeClickableMenu"/> isn't null), raised after that menu is drawn to the sprite batch but before it's rendered to the screen.</summary>
         /// <param name="sender">The event sender.</param>
         /// <param name="e">The event arguments.</param>
-        private void OnRenderedActiveMenu_DrawSocialPageOptions(object sender, RenderedActiveMenuEventArgs e)
-        {
-            if (Game1.activeClickableMenu is GameMenu gameMenu && gameMenu.currentTab == 2)
-            {
+        private void OnRenderedActiveMenu_DrawSocialPageOptions(object sender, RenderedActiveMenuEventArgs e) {
+            if (Game1.activeClickableMenu is GameMenu gameMenu && gameMenu.currentTab == 2) {
                 Game1.drawDialogueBox(
-                    Game1.activeClickableMenu.xPositionOnScreen - SocialPanelXOffset, 
-                    Game1.activeClickableMenu.yPositionOnScreen, 
-                    SocialPanelWidth, 
-                    Game1.activeClickableMenu.height, 
-                    false, 
+                    Game1.activeClickableMenu.xPositionOnScreen - SocialPanelXOffset,
+                    Game1.activeClickableMenu.yPositionOnScreen,
+                    SocialPanelWidth,
+                    Game1.activeClickableMenu.height,
+                    false,
                     true);
 
                 int slotPosition = (int)typeof(SocialPage)
@@ -453,8 +406,7 @@ namespace UIInfoSuite.UIElements {
                     .GetValue(_socialPage);
                 int yOffset = 0;
 
-                for (int i = slotPosition; i < slotPosition + 5 && i < _friendNames.Length; ++i)
-                {
+                for (int i = slotPosition;i < slotPosition + 5 && i < _friendNames.Length;++i) {
                     OptionsCheckbox checkbox = _checkboxes[i];
                     checkbox.bounds.X = Game1.activeClickableMenu.xPositionOnScreen - 60;
 
@@ -465,25 +417,24 @@ namespace UIInfoSuite.UIElements {
                     Color color = checkbox.isChecked ? Color.White : Color.Gray;
 
                     Game1.spriteBatch.Draw(
-                        Game1.mouseCursors, 
-                        new Vector2(checkbox.bounds.X - 50, checkbox.bounds.Y), 
-                        new Rectangle(80, 0, 16, 16), 
+                        Game1.mouseCursors,
+                        new Vector2(checkbox.bounds.X - 50, checkbox.bounds.Y),
+                        new Rectangle(80, 0, 16, 16),
                         color,
-                        0.0f, 
-                        Vector2.Zero, 
-                        3f, 
-                        SpriteEffects.None, 
+                        0.0f,
+                        Vector2.Zero,
+                        3f,
+                        SpriteEffects.None,
                         1f);
 
-                    if (yOffset != 560)
-                    {
+                    if (yOffset != 560) {
                         Game1.spriteBatch.Draw(
-                            Game1.staminaRect, 
+                            Game1.staminaRect,
                             new Rectangle(
-                                checkbox.bounds.X - 50, 
-                                checkbox.bounds.Y + 72, 
-                                SocialPanelWidth / 2 - 6, 
-                                4), 
+                                checkbox.bounds.X - 50,
+                                checkbox.bounds.Y + 72,
+                                SocialPanelWidth / 2 - 6,
+                                4),
                             Color.SaddleBrown);
 
                         Game1.spriteBatch.Draw(
@@ -495,8 +446,7 @@ namespace UIInfoSuite.UIElements {
                                 4),
                             Color.BurlyWood);
                     }
-                    if (!Game1.options.hardwareCursor)
-                    {
+                    if (!Game1.options.hardwareCursor) {
                         Game1.spriteBatch.Draw(
                             Game1.mouseCursors,
                             new Vector2(

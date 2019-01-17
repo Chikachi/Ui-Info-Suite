@@ -1,10 +1,13 @@
 {
     "Billboard" : "Tablón de anuncios",
     "Calendar" : "Calendario",
+    "Day" : "día",
     "Days" : "días",
+    "DayToMature" : "día para madurar",
     "DaysToMature" : "días para madurar",
     "FeelingLucky" : "¡Tienes suerte!",
     "HarvestPrice" : "Precio de la cosecha",
+    "Hour" : "hora",
     "Hours" : "horas",
     "LevelUp" : "Subida de nivel",
     "LuckyButNotTooLucky" : "Te sientes con suerte... aunque no demasiado",

@@ -1,10 +1,13 @@
 {
     "Billboard" : "布告栏",
     "Calendar" : "日历",
+    "Day" : "天",
     "Days" : "天",
+    "DayToMature" : "成熟的一天",
     "DaysToMature" : "天后成熟",
     "FeelingLucky" : "你感到很幸运！",
     "HarvestPrice" : "收获价",
+    "Hour" : "小时",
     "Hours" : "小时",
     "LevelUp" : "升级",
     "LuckyButNotTooLucky" : "你感到幸运……但不是特别幸运",

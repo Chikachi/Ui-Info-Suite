@@ -10,57 +10,47 @@ using System;
 using System.Timers;
 
 namespace UIInfoSuite.UIElements {
-    class ShowWhenAnimalNeedsPet : IDisposable
-    {
+    class ShowWhenAnimalNeedsPet : IDisposable {
         private readonly Timer _timer = new Timer();
         private float _yMovementPerDraw;
         private float _alpha;
         private readonly IModHelper _helper;
 
-        public ShowWhenAnimalNeedsPet(IModHelper helper)
-        {
+        public ShowWhenAnimalNeedsPet(IModHelper helper) {
             _timer.Elapsed += StartDrawingPetNeeds;
             _helper = helper;
         }
 
-        public void ToggleOption(bool showWhenAnimalNeedsPet)
-        {
+        public void ToggleOption(bool showWhenAnimalNeedsPet) {
             _timer.Stop();
             _helper.Events.Player.Warped -= OnWarped;
             _helper.Events.Display.RenderingHud -= OnRenderingHud_DrawAnimalHasProduct;
 
-            if (showWhenAnimalNeedsPet)
-            {
+            if (showWhenAnimalNeedsPet) {
                 _timer.Start();
                 _helper.Events.Player.Warped += OnWarped;
                 _helper.Events.Display.RenderingHud += OnRenderingHud_DrawAnimalHasProduct;
             }
         }
 
-        public void Dispose()
-        {
+        public void Dispose() {
             ToggleOption(false);
         }
 
         /// <summary>Raised before drawing the HUD (item toolbar, clock, etc) to the screen. The vanilla HUD may be hidden at this point (e.g. because a menu is open).</summary>
         /// <param name="sender">The event sender.</param>
         /// <param name="e">The event arguments.</param>
-        private void OnRenderingHud_DrawAnimalHasProduct(object sender, RenderingHudEventArgs e)
-        {
+        private void OnRenderingHud_DrawAnimalHasProduct(object sender, RenderingHudEventArgs e) {
             if (!Game1.eventUp &&
                 Game1.activeClickableMenu == null &&
-                Game1.currentLocation != null)
-            {
+                Game1.currentLocation != null) {
                 var animalsInCurrentLocation = GetAnimalsInCurrentLocation();
-                if (animalsInCurrentLocation != null)
-                {
-                    foreach (var animal in animalsInCurrentLocation.Pairs)
-                    {
+                if (animalsInCurrentLocation != null) {
+                    foreach (var animal in animalsInCurrentLocation.Pairs) {
                         if (!animal.Value.IsEmoting &&
                             animal.Value.currentProduce.Value != 430 &&
                             animal.Value.currentProduce.Value > 0 &&
-                            animal.Value.age.Value >= animal.Value.ageWhenMature.Value)
-                        {
+                            animal.Value.age.Value >= animal.Value.ageWhenMature.Value) {
                             Vector2 positionAboveAnimal = GetPetPositionAboveAnimal(animal.Value);
                             positionAboveAnimal.Y += (float)(Math.Sin(Game1.currentGameTime.TotalGameTime.TotalMilliseconds / 300.0 + (double)animal.Value.Name.GetHashCode()) * 5.0);
                             Game1.spriteBatch.Draw(
@@ -94,17 +84,12 @@ namespace UIInfoSuite.UIElements {
         /// <summary>Raised after a player warps to a new location.</summary>
         /// <param name="sender">The event sender.</param>
         /// <param name="e">The event arguments.</param>
-        private void OnWarped(object sender, WarpedEventArgs e)
-        {
-            if (e.IsLocalPlayer)
-            {
-                if (e.NewLocation is AnimalHouse || e.NewLocation is Farm)
-                {
+        private void OnWarped(object sender, WarpedEventArgs e) {
+            if (e.IsLocalPlayer) {
+                if (e.NewLocation is AnimalHouse || e.NewLocation is Farm) {
                     _timer.Interval = 1000;
                     _timer.Start();
-                }
-                else
-                {
+                } else {
                     _timer.Stop();
                     StopDrawingPetNeeds();
                 }
@@ -114,17 +99,14 @@ namespace UIInfoSuite.UIElements {
         /// <summary>Raised before drawing the HUD (item toolbar, clock, etc) to the screen. The vanilla HUD may be hidden at this point (e.g. because a menu is open).</summary>
         /// <param name="sender">The event sender.</param>
         /// <param name="e">The event arguments.</param>
-        private void OnRenderingHud_DrawNeedsPetTooltip(object sender, RenderingHudEventArgs e)
-        {
-            if (!Game1.eventUp && Game1.activeClickableMenu == null)
-            {
+        private void OnRenderingHud_DrawNeedsPetTooltip(object sender, RenderingHudEventArgs e) {
+            if (!Game1.eventUp && Game1.activeClickableMenu == null) {
                 DrawIconForFarmAnimals();
                 DrawIconForPets();
             }
         }
 
-        private void StartDrawingPetNeeds(object sender, ElapsedEventArgs e)
-        {
+        private void StartDrawingPetNeeds(object sender, ElapsedEventArgs e) {
             _timer.Stop();
             _helper.Events.Display.RenderingHud += OnRenderingHud_DrawNeedsPetTooltip;
             _helper.Events.GameLoop.UpdateTicked += UpdateTicked;
@@ -132,8 +114,7 @@ namespace UIInfoSuite.UIElements {
             _alpha = 1f;
         }
 
-        private void StopDrawingPetNeeds()
-        {
+        private void StopDrawingPetNeeds() {
             _helper.Events.Display.RenderingHud -= OnRenderingHud_DrawNeedsPetTooltip;
             _helper.Events.GameLoop.UpdateTicked -= UpdateTicked;
         }
@@ -141,40 +122,32 @@ namespace UIInfoSuite.UIElements {
         /// <summary>Raised after the game state is updated (≈60 times per second).</summary>
         /// <param name="sender">The event sender.</param>
         /// <param name="e">The event arguments.</param>
-        private void UpdateTicked(object sender, UpdateTickedEventArgs e)
-        {
+        private void UpdateTicked(object sender, UpdateTickedEventArgs e) {
             // update pet draw
-            if (e.IsMultipleOf(2))
-            {
+            if (e.IsMultipleOf(2)) {
                 _yMovementPerDraw += 0.3f;
                 _alpha -= 0.014f;
-                if (_alpha < 0.1f)
-                {
+                if (_alpha < 0.1f) {
                     StopDrawingPetNeeds();
                     _timer.Start();
                 }
             }
         }
 
-        private void DrawIconForFarmAnimals()
-        {
+        private void DrawIconForFarmAnimals() {
             var animalsInCurrentLocation = GetAnimalsInCurrentLocation();
 
-            if (animalsInCurrentLocation != null)
-            {
-                foreach (var animal in animalsInCurrentLocation.Pairs)
-                {
+            if (animalsInCurrentLocation != null) {
+                foreach (var animal in animalsInCurrentLocation.Pairs) {
                     if (!animal.Value.IsEmoting &&
-                        !animal.Value.wasPet.Value)
-                    {
+                        !animal.Value.wasPet.Value) {
                         Vector2 positionAboveAnimal = GetPetPositionAboveAnimal(animal.Value);
                         String animalType = animal.Value.type.Value.ToLower();
 
                         if (animalType.Contains("cow") ||
                             animalType.Contains("sheep") ||
                             animalType.Contains("goat") ||
-                            animalType.Contains("pig"))
-                        {
+                            animalType.Contains("pig")) {
                             positionAboveAnimal.X += 50f;
                             positionAboveAnimal.Y += 50f;
                         }
@@ -193,13 +166,10 @@ namespace UIInfoSuite.UIElements {
             }
         }
 
-        private void DrawIconForPets()
-        {
-            foreach (var character in Game1.currentLocation.characters)
-            {
+        private void DrawIconForPets() {
+            foreach (var character in Game1.currentLocation.characters) {
                 if (character is Pet &&
-                    !_helper.Reflection.GetField<bool>(character, "wasPetToday").GetValue())
-                {
+                    !_helper.Reflection.GetField<bool>(character, "wasPetToday").GetValue()) {
                     Vector2 positionAboveAnimal = GetPetPositionAboveAnimal(character);
                     positionAboveAnimal.X += 50f;
                     positionAboveAnimal.Y -= 20f;
@@ -217,22 +187,17 @@ namespace UIInfoSuite.UIElements {
             }
         }
 
-        private Vector2 GetPetPositionAboveAnimal(Character animal)
-        {
+        private Vector2 GetPetPositionAboveAnimal(Character animal) {
             return new Vector2(Game1.viewport.Width <= Game1.currentLocation.map.DisplayWidth ? animal.position.X - Game1.viewport.X + 16 : animal.position.X + ((Game1.viewport.Width - Game1.currentLocation.map.DisplayWidth) / 2 + 18),
                 Game1.viewport.Height <= Game1.currentLocation.map.DisplayHeight ? animal.position.Y - Game1.viewport.Y - 34 : animal.position.Y + ((Game1.viewport.Height - Game1.currentLocation.map.DisplayHeight) / 2 - 50));
         }
 
-        private NetLongDictionary<FarmAnimal, NetRef<FarmAnimal>> GetAnimalsInCurrentLocation()
-        {
+        private NetLongDictionary<FarmAnimal, NetRef<FarmAnimal>> GetAnimalsInCurrentLocation() {
             NetLongDictionary<FarmAnimal, NetRef<FarmAnimal>> animals = null;
 
-            if (Game1.currentLocation is AnimalHouse)
-            {
+            if (Game1.currentLocation is AnimalHouse) {
                 animals = (Game1.currentLocation as AnimalHouse).animals;
-            }
-            else if (Game1.currentLocation is Farm)
-            {
+            } else if (Game1.currentLocation is Farm) {
                 animals = (Game1.currentLocation as Farm).animals;
             }
 

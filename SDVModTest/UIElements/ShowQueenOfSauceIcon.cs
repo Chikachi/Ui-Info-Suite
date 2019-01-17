@@ -11,8 +11,7 @@ using System.Reflection;
 using UIInfoSuite.Extensions;
 
 namespace UIInfoSuite.UIElements {
-    class ShowQueenOfSauceIcon : IDisposable
-    {
+    class ShowQueenOfSauceIcon : IDisposable {
         private Dictionary<String, String> _recipesByDescription = new Dictionary<string, string>();
         private Dictionary<String, String> _recipes = new Dictionary<String, string>();
         private String _todaysRecipe;
@@ -22,15 +21,13 @@ namespace UIInfoSuite.UIElements {
         private ClickableTextureComponent _queenOfSauceIcon;
         private readonly IModHelper _helper;
 
-        public void ToggleOption(bool showQueenOfSauceIcon)
-        {
+        public void ToggleOption(bool showQueenOfSauceIcon) {
             _helper.Events.Display.RenderingHud -= OnRenderingHud;
             _helper.Events.Display.RenderedHud -= OnRenderedHud;
             _helper.Events.GameLoop.DayStarted -= OnDayStarted;
             _helper.Events.GameLoop.UpdateTicked -= OnUpdateTicked;
 
-            if (showQueenOfSauceIcon)
-            {
+            if (showQueenOfSauceIcon) {
                 LoadRecipes();
                 CheckForNewRecipe();
                 _helper.Events.GameLoop.DayStarted += OnDayStarted;
@@ -43,44 +40,34 @@ namespace UIInfoSuite.UIElements {
         /// <summary>Raised after the game state is updated (≈60 times per second).</summary>
         /// <param name="sender">The event sender.</param>
         /// <param name="e">The event arguments.</param>
-        private void OnUpdateTicked(object sender, UpdateTickedEventArgs e)
-        {
+        private void OnUpdateTicked(object sender, UpdateTickedEventArgs e) {
             // check if learned recipe
             if (e.IsOneSecond && _drawQueenOfSauceIcon && Game1.player.knowsRecipe(_todaysRecipe))
                 _drawQueenOfSauceIcon = false;
         }
 
-        public ShowQueenOfSauceIcon(IModHelper helper)
-        {
+        public ShowQueenOfSauceIcon(IModHelper helper) {
             _helper = helper;
         }
 
-        private void LoadRecipes()
-        {
-            if (_recipes.Count == 0)
-            {
+        private void LoadRecipes() {
+            if (_recipes.Count == 0) {
                 _recipes = Game1.content.Load<Dictionary<String, String>>("Data\\TV\\CookingChannel");
 
-                foreach (var next in _recipes)
-                {
+                foreach (var next in _recipes) {
                     string[] values = next.Value.Split('/');
 
-                    if (values.Length > 1)
-                    {
+                    if (values.Length > 1) {
                         _recipesByDescription[values[1]] = values[0];
                     }
                 }
             }
         }
 
-        private void FindGus()
-        {
-            foreach (var location in Game1.locations)
-            {
-                foreach (var npc in location.characters)
-                {
-                    if (npc.Name == "Gus")
-                    {
+        private void FindGus() {
+            foreach (var location in Game1.locations) {
+                foreach (var npc in location.characters) {
+                    if (npc.Name == "Gus") {
                         _gus = npc;
                         break;
                     }
@@ -90,8 +77,7 @@ namespace UIInfoSuite.UIElements {
             }
         }
 
-        private string[] GetTodaysRecipe()
-        {
+        private string[] GetTodaysRecipe() {
             String[] array1 = new string[2];
             int recipeNum = (int)(Game1.stats.DaysPlayed % 224 / 7);
             //var recipes = Game1.content.Load<Dictionary<String, String>>("Data\\TV\\CookingChannel");
@@ -100,9 +86,8 @@ namespace UIInfoSuite.UIElements {
             String[] splitValues = null;
             String key = null;
             bool checkCraftingRecipes = true;
-            
-            if (String.IsNullOrEmpty(recipeValue))
-            {
+
+            if (String.IsNullOrEmpty(recipeValue)) {
                 recipeValue = _recipes["1"];
                 checkCraftingRecipes = false;
             }
@@ -113,8 +98,7 @@ namespace UIInfoSuite.UIElements {
             ///recipe name. We are skipping a bunch of their steps to just get the
             ///english name needed to tell if the player knows the recipe or not
             array1[0] = key;
-            if (checkCraftingRecipes)
-            {
+            if (checkCraftingRecipes) {
                 String craftingRecipesValue = CraftingRecipe.cookingRecipes.SafeGet(key);
                 if (!String.IsNullOrEmpty(craftingRecipesValue))
                     splitValues = craftingRecipesValue.Split('/');
@@ -142,13 +126,10 @@ namespace UIInfoSuite.UIElements {
         /// <summary>Raised before drawing the HUD (item toolbar, clock, etc) to the screen. The vanilla HUD may be hidden at this point (e.g. because a menu is open).</summary>
         /// <param name="sender">The event sender.</param>
         /// <param name="e">The event arguments.</param>
-        private void OnRenderingHud(object sender, RenderingHudEventArgs e)
-        {
+        private void OnRenderingHud(object sender, RenderingHudEventArgs e) {
             // draw icon
-            if (!Game1.eventUp)
-            {
-                if (_drawQueenOfSauceIcon)
-                {
+            if (!Game1.eventUp) {
+                if (_drawQueenOfSauceIcon) {
                     Point iconPosition = IconHandler.Handler.GetNewIconPosition();
 
                     _queenOfSauceIcon = new ClickableTextureComponent(
@@ -159,8 +140,7 @@ namespace UIInfoSuite.UIElements {
                     _queenOfSauceIcon.draw(Game1.spriteBatch);
                 }
 
-                if (_drawDishOfDayIcon)
-                {
+                if (_drawDishOfDayIcon) {
                     Point iconLocation = IconHandler.Handler.GetNewIconPosition();
                     float scale = 2.9f;
 
@@ -191,8 +171,7 @@ namespace UIInfoSuite.UIElements {
 
                     texture.draw(Game1.spriteBatch);
 
-                    if (texture.containsPoint(Game1.getMouseX(), Game1.getMouseY()))
-                    {
+                    if (texture.containsPoint(Game1.getMouseX(), Game1.getMouseY())) {
                         IClickableMenu.drawHoverText(
                             Game1.spriteBatch,
                             "Gus is selling " + Game1.dishOfTheDay.DisplayName + " recipe today!",
@@ -205,12 +184,10 @@ namespace UIInfoSuite.UIElements {
         /// <summary>Raised after drawing the HUD (item toolbar, clock, etc) to the sprite batch, but before it's rendered to the screen.</summary>
         /// <param name="sender">The event sender.</param>
         /// <param name="e">The event arguments.</param>
-        private void OnRenderedHud(object sender, RenderedHudEventArgs e)
-        {
+        private void OnRenderedHud(object sender, RenderedHudEventArgs e) {
             // draw hover text
             if (_drawQueenOfSauceIcon &&
-                _queenOfSauceIcon.containsPoint(Game1.getMouseX(), Game1.getMouseY()))
-            {
+                _queenOfSauceIcon.containsPoint(Game1.getMouseX(), Game1.getMouseY())) {
                 IClickableMenu.drawHoverText(
                     Game1.spriteBatch,
                     _helper.SafeGetString(
@@ -219,21 +196,18 @@ namespace UIInfoSuite.UIElements {
             }
         }
 
-        public void Dispose()
-        {
+        public void Dispose() {
             ToggleOption(false);
         }
 
         /// <summary>Raised after the game begins a new day (including when the player loads a save).</summary>
         /// <param name="sender">The event sender.</param>
         /// <param name="e">The event arguments.</param>
-        private void OnDayStarted(object sender, DayStartedEventArgs e)
-        {
+        private void OnDayStarted(object sender, DayStartedEventArgs e) {
             this.CheckForNewRecipe();
         }
 
-        private void CheckForNewRecipe()
-        {
+        private void CheckForNewRecipe() {
             TV tv = new TV();
             int numRecipesKnown = Game1.player.cookingRecipes.Count();
             String[] recipes = typeof(TV).GetMethod("getWeeklyRecipe", BindingFlags.Instance | BindingFlags.NonPublic).Invoke(tv, null) as String[];
@@ -245,7 +219,7 @@ namespace UIInfoSuite.UIElements {
                 Game1.player.cookingRecipes.Remove(_todaysRecipe);
 
             _drawQueenOfSauceIcon = (Game1.dayOfMonth % 7 == 0 || (Game1.dayOfMonth - 3) % 7 == 0) &&
-                Game1.stats.DaysPlayed > 5 && 
+                Game1.stats.DaysPlayed > 5 &&
                 !Game1.player.knowsRecipe(_todaysRecipe);
             //_drawDishOfDayIcon = !Game1.player.knowsRecipe(Game1.dishOfTheDay.Name);
         }

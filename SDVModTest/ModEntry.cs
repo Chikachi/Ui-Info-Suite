@@ -11,8 +11,7 @@ using System.Globalization;
 using static StardewValley.LocalizedContentManager;
 
 namespace UIInfoSuite {
-    public class ModEntry : Mod
-    {
+    public class ModEntry : Mod {
         private SkipIntro _skipIntro;
 
         private String _modDataFileName;
@@ -22,10 +21,17 @@ namespace UIInfoSuite {
 
         private ModOptionsPageHandler _modOptionsPageHandler;
 
+        public ModEntry() {
+
+        }
+
+        ~ModEntry() {
+
+        }
+
         /// <summary>The mod entry point, called after the mod is first loaded.</summary>
         /// <param name="helper">Provides simplified APIs for writing mods.</param>
-        public override void Entry(IModHelper helper)
-        {
+        public override void Entry(IModHelper helper) {
             //Helper = helper;
             MonitorObject = Monitor;
             _skipIntro = new SkipIntro(helper.Events);
@@ -50,8 +56,7 @@ namespace UIInfoSuite {
 
         /// <summary>Raised after the game returns to the title screen.</summary>
         /// <param name="sender">The event sender.</param>
-        private void OnReturnedToTitle(object sender, ReturnedToTitleEventArgs e)
-        {
+        private void OnReturnedToTitle(object sender, ReturnedToTitleEventArgs e) {
             _modOptionsPageHandler?.Dispose();
             _modOptionsPageHandler = null;
         }
@@ -59,21 +64,17 @@ namespace UIInfoSuite {
         /// <summary>Raised after the game finishes writing data to the save file (except the initial save creation).</summary>
         /// <param name="sender">The event sender.</param>
         /// <param name="e">The event arguments.</param>
-        private void OnSaved(object sender, EventArgs e)
-        {
-            if (!String.IsNullOrWhiteSpace(_modDataFileName))
-            {
+        private void OnSaved(object sender, EventArgs e) {
+            if (!String.IsNullOrWhiteSpace(_modDataFileName)) {
                 if (File.Exists(_modDataFileName))
                     File.Delete(_modDataFileName);
                 XmlWriterSettings settings = new XmlWriterSettings();
                 settings.Indent = true;
                 settings.IndentChars = "  ";
-                using (XmlWriter writer = XmlWriter.Create(File.Open(_modDataFileName, FileMode.Create, FileAccess.Write, FileShare.ReadWrite), settings))
-                {
+                using (XmlWriter writer = XmlWriter.Create(File.Open(_modDataFileName, FileMode.Create, FileAccess.Write, FileShare.ReadWrite), settings)) {
                     writer.WriteStartElement("options");
 
-                    foreach (var option in _options)
-                    {
+                    foreach (var option in _options) {
                         writer.WriteStartElement("option");
                         writer.WriteAttributeString("name", option.Key);
                         writer.WriteValue(option.Value);
@@ -88,30 +89,23 @@ namespace UIInfoSuite {
         /// <summary>Raised after the player loads a save slot and the world is initialised.</summary>
         /// <param name="sender">The event sender.</param>
         /// <param name="e">The event arguments.</param>
-        private void OnSaveLoaded(object sender, SaveLoadedEventArgs e)
-        {
-            try
-            {
-                try
-                {
+        private void OnSaveLoaded(object sender, SaveLoadedEventArgs e) {
+            try {
+                try {
                     _modDataFileName = Path.Combine(Helper.DirectoryPath, Game1.player.Name + "_modData.xml");
-                }
-                catch
-                {
+                } catch {
                     Monitor.Log("Error: Player name contains character that cannot be used in file name. Using generic file name." + Environment.NewLine +
                         "Options may not be able to be different between characters.", LogLevel.Warn);
                     _modDataFileName = Path.Combine(Helper.DirectoryPath, "default_modData.xml");
                 }
 
-                if (File.Exists(_modDataFileName))
-                {
+                if (File.Exists(_modDataFileName)) {
                     XmlDocument document = new XmlDocument();
 
                     document.Load(_modDataFileName);
                     XmlNodeList nodes = document.GetElementsByTagName("option");
 
-                    foreach (XmlNode node in nodes)
-                    {
+                    foreach (XmlNode node in nodes) {
                         String key = node.Attributes["name"]?.Value;
                         String value = node.InnerText;
 
@@ -120,15 +114,13 @@ namespace UIInfoSuite {
                     }
 
                 }
-            }
-            catch (Exception ex)
-            {
+            } catch (Exception ex) {
                 Monitor.Log("Error loading mod config. " + ex.Message + Environment.NewLine + ex.StackTrace, LogLevel.Error);
             }
 
             _modOptionsPageHandler = new ModOptionsPageHandler(Helper, _options);
         }
 
-       
+
     }
 }

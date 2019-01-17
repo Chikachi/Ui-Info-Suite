@@ -8,8 +8,7 @@ using System;
 using System.Collections.Generic;
 
 namespace UIInfoSuite.UIElements {
-    class ShowItemEffectRanges : IDisposable
-    {
+    class ShowItemEffectRanges : IDisposable {
         private readonly List<Point> _effectiveArea = new List<Point>();
         private readonly ModConfig _modConfig;
         private readonly IModEvents _events;
@@ -35,102 +34,78 @@ namespace UIInfoSuite.UIElements {
             new int[17] { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 }
         };
 
-        public ShowItemEffectRanges(ModConfig modConfig, IModEvents events)
-        {
+        public ShowItemEffectRanges(ModConfig modConfig, IModEvents events) {
             _modConfig = modConfig;
             _events = events;
         }
 
-        public void ToggleOption(bool showItemEffectRanges)
-        {
+        public void ToggleOption(bool showItemEffectRanges) {
             _events.Display.Rendered -= OnRendered;
             _events.GameLoop.UpdateTicked -= OnUpdateTicked;
 
-            if (showItemEffectRanges)
-            {
+            if (showItemEffectRanges) {
                 _events.Display.Rendered += OnRendered;
                 _events.GameLoop.UpdateTicked += OnUpdateTicked;
             }
         }
 
-        public void Dispose()
-        {
+        public void Dispose() {
             ToggleOption(false);
         }
 
         /// <summary>Raised after the game state is updated (≈60 times per second).</summary>
         /// <param name="sender">The event sender.</param>
         /// <param name="e">The event arguments.</param>
-        private void OnUpdateTicked(object sender, UpdateTickedEventArgs e)
-        {
+        private void OnUpdateTicked(object sender, UpdateTickedEventArgs e) {
             if (!e.IsMultipleOf(4))
                 return;
 
             // check draw tile outlines
             _effectiveArea.Clear();
             if (Game1.activeClickableMenu == null &&
-                !Game1.eventUp)
-            {
-                if (Game1.currentLocation is BuildableGameLocation buildableLocation)
-                {
+                !Game1.eventUp) {
+                if (Game1.currentLocation is BuildableGameLocation buildableLocation) {
                     Building building = buildableLocation.getBuildingAt(Game1.currentCursorTile);
 
-                    if (building is JunimoHut)
-                    {
-                        foreach (var nextBuilding in buildableLocation.buildings)
-                        {
+                    if (building is JunimoHut) {
+                        foreach (var nextBuilding in buildableLocation.buildings) {
                             if (nextBuilding is JunimoHut nextHut)
                                 ParseConfigToHighlightedArea(_junimoHutArray, nextHut.tileX.Value + 1, nextHut.tileY.Value + 1);
                         }
                     }
                 }
 
-                if (Game1.player.CurrentItem != null)
-                {
+                if (Game1.player.CurrentItem != null) {
                     String name = Game1.player.CurrentItem.Name.ToLower();
                     Item currentItem = Game1.player.CurrentItem;
                     List<StardewValley.Object> objects = null;
 
                     int[][] arrayToUse = null;
 
-                    if (name.Contains("arecrow"))
-                    {
+                    if (name.Contains("arecrow")) {
                         arrayToUse = new int[17][];
-                        for (int i = 0; i < 17; ++i)
-                        {
+                        for (int i = 0;i < 17;++i) {
                             arrayToUse[i] = new int[17];
-                            for (int j = 0; j < 17; ++j)
-                            {
+                            for (int j = 0;j < 17;++j) {
                                 arrayToUse[i][j] = (Math.Abs(i - 8) + Math.Abs(j - 8) <= 12) ? 1 : 0;
                             }
                         }
                         ParseConfigToHighlightedArea(arrayToUse, TileUnderMouseX, TileUnderMouseY);
                         objects = GetObjectsInLocationOfSimilarName("arecrow");
-                        if (objects != null)
-                        {
-                            foreach (StardewValley.Object next in objects)
-                            {
+                        if (objects != null) {
+                            foreach (StardewValley.Object next in objects) {
                                 ParseConfigToHighlightedArea(arrayToUse, (int)next.TileLocation.X, (int)next.TileLocation.Y);
                             }
                         }
 
-                    }
-                    else if (name.Contains("sprinkler"))
-                    {
-                        if (name.Contains("iridium"))
-                        {
+                    } else if (name.Contains("sprinkler")) {
+                        if (name.Contains("iridium")) {
                             arrayToUse = _modConfig.IridiumSprinkler;
-                        }
-                        else if (name.Contains("quality"))
-                        {
+                        } else if (name.Contains("quality")) {
                             arrayToUse = _modConfig.QualitySprinkler;
-                        }
-			else if (name.Contains("prismatic"))
-                        {
+                        } else if (name.Contains("prismatic")) {
                             arrayToUse = _modConfig.PrismaticSprinkler;
-                        }
-                        else
-                        {
+                        } else {
                             arrayToUse = _modConfig.Sprinkler;
                         }
 
@@ -139,25 +114,16 @@ namespace UIInfoSuite.UIElements {
 
                         objects = GetObjectsInLocationOfSimilarName("sprinkler");
 
-                        if (objects != null)
-                        {
-                            foreach (StardewValley.Object next in objects)
-                            {
+                        if (objects != null) {
+                            foreach (StardewValley.Object next in objects) {
                                 string objectName = next.name.ToLower();
-                                if (objectName.Contains("iridium"))
-                                {
+                                if (objectName.Contains("iridium")) {
                                     arrayToUse = _modConfig.IridiumSprinkler;
-                                }
-                                else if (objectName.Contains("quality"))
-                                {
+                                } else if (objectName.Contains("quality")) {
                                     arrayToUse = _modConfig.QualitySprinkler;
-                                }
-				else if (name.Contains("prismatic"))
-				{
-					arrayToUse = _modConfig.PrismaticSprinkler;
-				}
-                                else
-                                {
+                                } else if (name.Contains("prismatic")) {
+                                    arrayToUse = _modConfig.PrismaticSprinkler;
+                                } else {
                                     arrayToUse = _modConfig.Sprinkler;
                                 }
 
@@ -165,9 +131,7 @@ namespace UIInfoSuite.UIElements {
                                     ParseConfigToHighlightedArea(arrayToUse, (int)next.TileLocation.X, (int)next.TileLocation.Y);
                             }
                         }
-                    }
-                    else if (name.Contains("bee house"))
-                    {
+                    } else if (name.Contains("bee house")) {
                         ParseConfigToHighlightedArea(_modConfig.Beehouse, TileUnderMouseX, TileUnderMouseY);
                     }
 
@@ -178,8 +142,7 @@ namespace UIInfoSuite.UIElements {
         /// <summary>Raised after the game draws to the sprite patch in a draw tick, just before the final sprite batch is rendered to the screen.</summary>
         /// <param name="sender">The event sender.</param>
         /// <param name="e">The event arguments.</param>
-        private void OnRendered(object sender, RenderedEventArgs e)
-        {
+        private void OnRendered(object sender, RenderedEventArgs e) {
             // draw tile outlines
             foreach (Point point in _effectiveArea)
                 Game1.spriteBatch.Draw(
@@ -194,41 +157,33 @@ namespace UIInfoSuite.UIElements {
                     0.01f);
         }
 
-        private void ParseConfigToHighlightedArea(int[][] highlightedLocation, int xPos, int yPos)
-        {
+        private void ParseConfigToHighlightedArea(int[][] highlightedLocation, int xPos, int yPos) {
             int xOffset = highlightedLocation.Length / 2;
-            for (int i = 0; i < highlightedLocation.Length; ++i)
-            {
+            for (int i = 0;i < highlightedLocation.Length;++i) {
                 int yOffset = highlightedLocation[i].Length / 2;
-                for (int j = 0; j < highlightedLocation[i].Length; ++j)
-                {
+                for (int j = 0;j < highlightedLocation[i].Length;++j) {
                     if (highlightedLocation[i][j] == 1)
                         _effectiveArea.Add(new Point(xPos + i - xOffset, yPos + j - yOffset));
                 }
             }
         }
 
-        private int TileUnderMouseX
-        {
+        private int TileUnderMouseX {
             get { return (Game1.getMouseX() + Game1.viewport.X) / Game1.tileSize; }
         }
 
-        private int TileUnderMouseY
-        {
+        private int TileUnderMouseY {
             get { return (Game1.getMouseY() + Game1.viewport.Y) / Game1.tileSize; }
         }
 
-        private List<StardewValley.Object> GetObjectsInLocationOfSimilarName(String nameContains)
-        {
+        private List<StardewValley.Object> GetObjectsInLocationOfSimilarName(String nameContains) {
             List<StardewValley.Object> result = new List<StardewValley.Object>();
 
-            if (!String.IsNullOrEmpty(nameContains))
-            {
+            if (!String.IsNullOrEmpty(nameContains)) {
                 nameContains = nameContains.ToLower();
                 var objects = Game1.currentLocation.Objects;
 
-                foreach (var nextThing in objects.Values)
-                {
+                foreach (var nextThing in objects.Values) {
                     if (nextThing.name.ToLower().Contains(nameContains))
                         result.Add(nextThing);
                 }

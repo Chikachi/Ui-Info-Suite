@@ -7,22 +7,19 @@ using System;
 using UIInfoSuite.Extensions;
 
 namespace UIInfoSuite.UIElements {
-    class LuckOfDay : IDisposable
-    {
+    class LuckOfDay : IDisposable {
         private String _hoverText = string.Empty;
         private Color _color = new Color(Color.White.ToVector4());
         private ClickableTextureComponent _icon;
         private readonly IModHelper _helper;
 
-        public void Toggle(bool showLuckOfDay)
-        {
+        public void Toggle(bool showLuckOfDay) {
             _helper.Events.Player.Warped -= OnWarped;
             _helper.Events.Display.RenderingHud -= OnRenderingHud;
             _helper.Events.Display.RenderedHud -= OnRenderedHud;
             _helper.Events.GameLoop.UpdateTicked -= OnUpdateTicked;
 
-            if (showLuckOfDay)
-            {
+            if (showLuckOfDay) {
                 AdjustIconXToBlackBorder();
                 _helper.Events.Player.Warped += OnWarped;
                 _helper.Events.GameLoop.UpdateTicked += OnUpdateTicked;
@@ -31,46 +28,36 @@ namespace UIInfoSuite.UIElements {
             }
         }
 
-        public LuckOfDay(IModHelper helper)
-        {
+        public LuckOfDay(IModHelper helper) {
             _helper = helper;
         }
 
-        public void Dispose()
-        {
+        public void Dispose() {
             Toggle(false);
         }
 
         /// <summary>Raised after the game state is updated (≈60 times per second).</summary>
         /// <param name="sender">The event sender.</param>
         /// <param name="e">The event arguments.</param>
-        private void OnUpdateTicked(object sender, UpdateTickedEventArgs e)
-        {
+        private void OnUpdateTicked(object sender, UpdateTickedEventArgs e) {
             // calculate luck
             if (e.IsMultipleOf(30)) // half second
             {
                 _color = new Color(Color.White.ToVector4());
 
-                if (Game1.dailyLuck < -0.04)
-                {
+                if (Game1.dailyLuck < -0.04) {
                     _hoverText = _helper.SafeGetString(LanguageKeys.MaybeStayHome);
                     _color.B = 155;
                     _color.G = 155;
-                }
-                else if (Game1.dailyLuck < 0)
-                {
+                } else if (Game1.dailyLuck < 0) {
                     _hoverText = _helper.SafeGetString(LanguageKeys.NotFeelingLuckyAtAll);
                     _color.B = 165;
                     _color.G = 165;
                     _color.R = 165;
                     _color *= 0.8f;
-                }
-                else if (Game1.dailyLuck <= 0.04)
-                {
+                } else if (Game1.dailyLuck <= 0.04) {
                     _hoverText = _helper.SafeGetString(LanguageKeys.LuckyButNotTooLucky);
-                }
-                else
-                {
+                } else {
                     _hoverText = _helper.SafeGetString(LanguageKeys.FeelingLucky);
                     _color.B = 155;
                     _color.R = 155;
@@ -81,8 +68,7 @@ namespace UIInfoSuite.UIElements {
         /// <summary>Raised after drawing the HUD (item toolbar, clock, etc) to the sprite batch, but before it's rendered to the screen. The vanilla HUD may be hidden at this point (e.g. because a menu is open).</summary>
         /// <param name="sender">The event sender.</param>
         /// <param name="e">The event arguments.</param>
-        private void OnRenderedHud(object sender, RenderedHudEventArgs e)
-        {
+        private void OnRenderedHud(object sender, RenderedHudEventArgs e) {
             // draw hover text
             if (_icon.containsPoint(Game1.getMouseX(), Game1.getMouseY()))
                 IClickableMenu.drawHoverText(Game1.spriteBatch, _hoverText, Game1.dialogueFont);
@@ -91,11 +77,9 @@ namespace UIInfoSuite.UIElements {
         /// <summary>Raised before drawing the HUD (item toolbar, clock, etc) to the screen. The vanilla HUD may be hidden at this point (e.g. because a menu is open).</summary>
         /// <param name="sender">The event sender.</param>
         /// <param name="e">The event arguments.</param>
-        private void OnRenderingHud(object sender, RenderingHudEventArgs e)
-        {
+        private void OnRenderingHud(object sender, RenderingHudEventArgs e) {
             // draw dice icon
-            if (!Game1.eventUp)
-            {
+            if (!Game1.eventUp) {
                 Point iconPosition = IconHandler.Handler.GetNewIconPosition();
                 _icon.bounds.X = iconPosition.X;
                 _icon.bounds.Y = iconPosition.Y;
@@ -106,17 +90,14 @@ namespace UIInfoSuite.UIElements {
         /// <summary>Raised after a player warps to a new location.</summary>
         /// <param name="sender">The event sender.</param>
         /// <param name="e">The event arguments.</param>
-        private void OnWarped(object sender, WarpedEventArgs e)
-        {
+        private void OnWarped(object sender, WarpedEventArgs e) {
             // adjust icon X to black border
-            if (e.IsLocalPlayer)
-            {
+            if (e.IsLocalPlayer) {
                 AdjustIconXToBlackBorder();
             }
         }
 
-        private void AdjustIconXToBlackBorder()
-        {
+        private void AdjustIconXToBlackBorder() {
             _icon = new ClickableTextureComponent("",
                 new Rectangle(Tools.GetWidthInPlayArea() - 134,
                     290,

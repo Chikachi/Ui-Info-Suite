@@ -1,10 +1,13 @@
 {
     "Billboard" : "Anschlagtafel",
     "Calendar" : "Kalender",
+    "Day" : "Tag",
     "Days" : "Tage",
+    "DayToMature" : "tag zu reifen",
     "DaysToMature" : "Tage bis gereift",
     "FeelingLucky" : "Du fühlst dich glücklich!",
     "HarvestPrice" : "Erntewert",
+    "Hour" : "Stunde",
     "Hours" : "Stunden",
     "LevelUp" : "Level aufgestiegen",
     "LuckyButNotTooLucky" : "Du fühlst dich glücklich ... aber nicht zu glücklich",

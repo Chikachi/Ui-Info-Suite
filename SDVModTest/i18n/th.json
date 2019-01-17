@@ -1,10 +1,13 @@
 {
     "Billboard" : "บอร์ด",
     "Calendar" : "ปฏิทิน",
+    "Day" : "วัน",
     "Days" : "วัน",
+    "DayToMature" : "วันที่จะเติบโต",
     "DaysToMature" : "วันสำหรับผู้ใหญ่",
     "FeelingLucky" : "คุณรู้สึกโชคดีมาก !!",
     "HarvestPrice" : "ราคาเก็บเกี่ยว",
+    "Hour" : "ชั่วโมง",
     "Hours" : "ชั่วโมง",
     "LevelUp" : "ยกระดับ",
     "LuckyButNotTooLucky" : "รู้สึก 'โชคดี ... แต่ไม่โชคดีเกินไป",

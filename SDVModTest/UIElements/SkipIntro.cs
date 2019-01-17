@@ -5,13 +5,11 @@ using StardewValley.Menus;
 using System;
 
 namespace UIInfoSuite.UIElements {
-    class SkipIntro
-    {
+    class SkipIntro {
         private readonly IModEvents _events;
         //private bool _skipIntro = false;
 
-        public SkipIntro(IModEvents events)
-        {
+        public SkipIntro(IModEvents events) {
             _events = events;
 
             //GameEvents.QuarterSecondTick += CheckForSkip;
@@ -23,8 +21,7 @@ namespace UIInfoSuite.UIElements {
         /// <summary>Raised after the player loads a save slot and the world is initialised.</summary>
         /// <param name="sender">The event sender.</param>
         /// <param name="e">The event arguments.</param>
-        private void OnSaveLoaded(object sender, EventArgs e)
-        {
+        private void OnSaveLoaded(object sender, EventArgs e) {
             // stop checking for skip key
             _events.Input.ButtonPressed -= OnButtonPressed;
             _events.GameLoop.SaveLoaded -= OnSaveLoaded;
@@ -33,10 +30,8 @@ namespace UIInfoSuite.UIElements {
         /// <summary>Raised after the player presses a button on the keyboard, controller, or mouse.</summary>
         /// <param name="sender">The event sender.</param>
         /// <param name="e">The event arguments.</param>
-        private void OnButtonPressed(object sender, ButtonPressedEventArgs e)
-        {
-            if (Game1.activeClickableMenu is TitleMenu menu && e.Button == SButton.Escape)
-            {
+        private void OnButtonPressed(object sender, ButtonPressedEventArgs e) {
+            if (Game1.activeClickableMenu is TitleMenu menu && e.Button == SButton.Escape) {
                 menu.skipToTitleButtons();
                 _events.Input.ButtonPressed -= OnButtonPressed;
             }
